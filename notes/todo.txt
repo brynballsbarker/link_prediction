@@ -1,0 +1,8 @@
+to do:
+
+find more data
+fix mathematica code
+    make sure all predict same amount
+test a ton
+change links to be weighted
+make presentation
