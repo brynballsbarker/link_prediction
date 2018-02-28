@@ -1,0 +1,785 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     33748,        775]
+NotebookOptionsPosition[     33492,        761]
+NotebookOutlinePosition[     33847,        777]
+CellTagsIndexPosition[     33804,        774]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"compareScoresFile", "[", 
+     RowBox[{"location_", ",", "name_"}], "]"}], " ", ":=", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "data", ",", " ", "lines", ",", " ", "n", ",", " ", "chop", ",", " ", 
+        "train", ",", " ", "test", ",", " ", "k", ",", " ", "toPredict", ",", 
+        " ", "g", ",", "timeEffectiveTransition", ",", " ", 
+        "predEffectiveTransition", ",", "scoreEffTransition", ",", 
+        "timeWEffectiveTransition", ",", " ", "predWEffectiveTransition", ",",
+         "scoreWEffTransition", ",", "timeSpectralEmbedding", ",", " ", 
+        "predSpectralEmbedding", ",", "scoreSpecEmbedding", " ", ",", 
+        "timeShortestPath", ",", " ", "predShortestPath", ",", 
+        "scoreShortPath", ",", "timeCommonNeighbors", ",", " ", 
+        "predCommonNeighbors", ",", "scoreCommNeighbors", ",", 
+        "timePrefAttatchment", ",", " ", "predPrefAttatchment", ",", 
+        "scorePrefAttatchment", ",", "timeKatz", ",", " ", "predKatz", ",", 
+        "scoreKatz", ",", "timePageRank", ",", " ", "predPageRank", ",", 
+        "scorePageRank", ",", " ", "timeHittingTime", ",", "predHittingTime", 
+        ",", "scoreHitTime", ",", "timeCommuteTime", ",", "predCommuteTime", 
+        ",", "scoreCommTime", ",", "results", ",", "table", ",", "timeJacard",
+         ",", " ", "predJacard", ",", "scoreJacard", ",", "predMoorePenrose", 
+        ",", " ", "scoreMoorePenrose", ",", "timeMoorePenrose", ",", " ", 
+        "connected"}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"Print", "[", "name", "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"data", " ", "=", " ", 
+        RowBox[{"Import", "[", "location", "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"lines", " ", "=", " ", 
+        RowBox[{"StringSplit", "[", 
+         RowBox[{"data", ",", " ", "\"\<\\n\>\""}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"lines", " ", "=", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{"For", "[", 
+            RowBox[{
+             RowBox[{"k", "=", "1"}], ",", 
+             RowBox[{"k", "\[LessEqual]", 
+              RowBox[{"Length", "[", "lines", "]"}]}], ",", 
+             RowBox[{"k", "++"}], ",", 
+             RowBox[{"Sow", "[", 
+              RowBox[{"StringSplit", "[", 
+               RowBox[{"lines", "[", 
+                RowBox[{"[", "k", "]"}], "]"}], "]"}], "]"}]}], "]"}], "//", 
+           "Reap"}], "//", "Last"}], "//", "Last"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"lines", " ", "=", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{"For", "[", 
+            RowBox[{
+             RowBox[{"k", "=", "1"}], ",", 
+             RowBox[{"k", "\[LessEqual]", 
+              RowBox[{"Length", "[", "lines", "]"}]}], ",", 
+             RowBox[{"k", "++"}], ",", 
+             RowBox[{"Sow", "[", 
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"ToExpression", "[", 
+                 RowBox[{
+                  RowBox[{"lines", "[", 
+                   RowBox[{"[", "k", "]"}], "]"}], "[", 
+                  RowBox[{"[", "1", "]"}], "]"}], "]"}], ",", 
+                RowBox[{"ToExpression", "[", 
+                 RowBox[{
+                  RowBox[{"lines", "[", 
+                   RowBox[{"[", "k", "]"}], "]"}], "[", 
+                  RowBox[{"[", "2", "]"}], "]"}], "]"}], ",", 
+                RowBox[{"ToExpression", "[", 
+                 RowBox[{
+                  RowBox[{"lines", "[", 
+                   RowBox[{"[", "k", "]"}], "]"}], "[", 
+                  RowBox[{"[", "3", "]"}], "]"}], "]"}]}], "}"}], "]"}]}], 
+            "]"}], "//", "Reap"}], "//", "Last"}], "//", "Last"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"lines", " ", "=", " ", 
+        RowBox[{"SortBy", "[", 
+         RowBox[{"lines", ",", 
+          RowBox[{
+           RowBox[{"#", "[", 
+            RowBox[{"[", "3", "]"}], "]"}], "&"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"n", " ", "=", " ", 
+        RowBox[{"Length", "[", "lines", "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"chop", " ", "=", " ", 
+        RowBox[{"Floor", "[", 
+         RowBox[{"3", "*", 
+          RowBox[{"n", "/", "4"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"train", " ", "=", " ", 
+        RowBox[{"lines", "[", 
+         RowBox[{"[", 
+          RowBox[{";;", "chop"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{"train", " ", "=", " ", 
+          RowBox[{"Select", "[", 
+           RowBox[{"lines", ",", " ", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"#", "[", 
+               RowBox[{"[", "3", "]"}], "]"}], " ", "\[Equal]", " ", 
+              "\"\<0\>\""}], "&"}]}], "]"}]}], ";"}], "*)"}], 
+       "\[IndentingNewLine]", 
+       RowBox[{"test", " ", "=", " ", 
+        RowBox[{"lines", "[", 
+         RowBox[{"[", 
+          RowBox[{
+           RowBox[{"chop", "+", "1"}], ";;"}], "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"k", " ", "=", " ", 
+        RowBox[{"Length", "[", "test", "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", "k", "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"toPredict", " ", "=", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{"For", "[", 
+            RowBox[{
+             RowBox[{"i", " ", "=", " ", "1"}], ",", 
+             RowBox[{"i", "\[LessEqual]", " ", "k"}], ",", 
+             RowBox[{"i", "++"}], ",", 
+             RowBox[{"Sow", "[", 
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"test", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}], "[", 
+                 RowBox[{"[", "1", "]"}], "]"}], ",", 
+                RowBox[{
+                 RowBox[{"test", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}], "[", 
+                 RowBox[{"[", "2", "]"}], "]"}]}], "}"}], "]"}]}], "]"}], "//",
+            "Reap"}], "//", "Last"}], "//", "Last"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"g", " ", "=", " ", 
+        RowBox[{"Graph", "[", 
+         RowBox[{
+          RowBox[{"UndirectedEdge", " ", "@@@", " ", "train"}], ",", " ", 
+          RowBox[{"VertexLabels", "\[Rule]", "\"\<Name\>\""}]}], "]"}]}], ";",
+        "\[IndentingNewLine]", 
+       RowBox[{"connected", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"ConnectedComponents", "[", "g", "]"}], "[", 
+         RowBox[{"[", "1", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"g", " ", "=", " ", 
+        RowBox[{"Subgraph", "[", 
+         RowBox[{"g", ",", " ", "connected", ",", " ", 
+          RowBox[{"VertexLabels", "\[Rule]", "Automatic"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", "g", "]"}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+         "timeEffectiveTransition", ",", " ", "predEffectiveTransition"}], 
+         "}"}], " ", "=", " ", 
+        RowBox[{"Timing", "[", 
+         RowBox[{"modifiedEffectiveTransition", "[", 
+          RowBox[{"g", ",", " ", "k"}], "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", 
+        RowBox[{"Length", "[", "predEffectiveTransition", "]"}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"scoreEffTransition", " ", "=", " ", 
+        RowBox[{"N", "[", 
+         RowBox[{
+          RowBox[{"Length", "[", 
+           RowBox[{"Intersection", "[", 
+            RowBox[{"toPredict", ",", " ", "predEffectiveTransition"}], "]"}],
+            "]"}], "/", 
+          RowBox[{"Length", "[", "predEffectiveTransition", "]"}]}], "]"}]}], 
+       ";", "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", "\"\<Done With Effective Transition\>\"", "]"}], 
+       ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+         "timeWEffectiveTransition", ",", " ", "predWEffectiveTransition"}], 
+         "}"}], " ", "=", " ", 
+        RowBox[{"Timing", "[", 
+         RowBox[{"weightedEffectiveTransition", "[", 
+          RowBox[{"g", ",", " ", "k"}], "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", 
+        RowBox[{"Length", "[", "predWEffectiveTransition", "]"}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"scoreWEffTransition", " ", "=", " ", 
+        RowBox[{"N", "[", 
+         RowBox[{
+          RowBox[{"Length", "[", 
+           RowBox[{"Intersection", "[", 
+            RowBox[{"toPredict", ",", " ", "predWEffectiveTransition"}], 
+            "]"}], "]"}], "/", 
+          RowBox[{"Length", "[", "predWEffectiveTransition", "]"}]}], "]"}]}],
+        ";", "\[IndentingNewLine]", 
+       RowBox[{
+       "Print", "[", "\"\<Done With Weighted Effective Transition\>\"", "]"}],
+        ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"timeSpectralEmbedding", ",", " ", "predSpectralEmbedding"}],
+          "}"}], " ", "=", " ", 
+        RowBox[{"Timing", "[", 
+         RowBox[{"spectralEmbedPredictor", "[", 
+          RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", 
+        RowBox[{"Length", "[", "predSpectralEmbedding", "]"}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"scoreSpecEmbedding", " ", "=", " ", 
+        RowBox[{"N", "[", 
+         RowBox[{
+          RowBox[{"Length", "[", 
+           RowBox[{"Intersection", "[", 
+            RowBox[{"toPredict", ",", " ", "predSpectralEmbedding"}], "]"}], 
+           "]"}], "/", 
+          RowBox[{"Length", "[", "predSpectralEmbedding", "]"}]}], "]"}]}], 
+       ";", "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", "\"\<Done With Spectral Embedding\>\"", "]"}], 
+       ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"timeShortestPath", ",", " ", "predShortestPath"}], "}"}], 
+        " ", "=", "  ", 
+        RowBox[{"Timing", "[", 
+         RowBox[{"shortestPathLength", "[", 
+          RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", 
+        RowBox[{"Length", "[", "predShortestPath", "]"}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"scoreShortPath", " ", "=", " ", 
+        RowBox[{"N", "[", 
+         RowBox[{
+          RowBox[{"Length", "[", 
+           RowBox[{"Intersection", "[", 
+            RowBox[{"toPredict", ",", " ", "predShortestPath"}], "]"}], "]"}],
+           "/", 
+          RowBox[{"Length", "[", "predShortestPath", "]"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", "\"\<Done With Shortest Path\>\"", "]"}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"timeCommonNeighbors", ",", " ", "predCommonNeighbors"}], 
+         "}"}], " ", "=", " ", 
+        RowBox[{"Timing", "[", 
+         RowBox[{"commonNeighbors", "[", 
+          RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", 
+        RowBox[{"Length", "[", "predCommonNeighbors", "]"}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"scoreCommNeighbors", " ", "=", " ", 
+        RowBox[{"N", "[", 
+         RowBox[{
+          RowBox[{"Length", "[", 
+           RowBox[{"Intersection", "[", 
+            RowBox[{"toPredict", ",", " ", "predCommonNeighbors"}], "]"}], 
+           "]"}], "/", 
+          RowBox[{"Length", "[", "predCommonNeighbors", "]"}]}], "]"}]}], ";",
+        "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", "\"\<Done With Common Neighbors\>\"", "]"}], ";",
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"timePrefAttatchment", ",", " ", "predPrefAttatchment"}], 
+         "}"}], " ", "=", " ", 
+        RowBox[{"Timing", "[", 
+         RowBox[{"preferentialAttatchment", "[", 
+          RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", 
+        RowBox[{"Length", "[", "predPrefAttatchment", "]"}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"scorePrefAttatchment", " ", "=", " ", 
+        RowBox[{"N", "[", 
+         RowBox[{
+          RowBox[{"Length", "[", 
+           RowBox[{"Intersection", "[", 
+            RowBox[{"toPredict", ",", " ", "predPrefAttatchment"}], "]"}], 
+           "]"}], "/", 
+          RowBox[{"Length", "[", "predPrefAttatchment", "]"}]}], "]"}]}], ";",
+        "\[IndentingNewLine]", 
+       RowBox[{
+       "Print", "[", "\"\<Done With Preferential Attatchment\>\"", "]"}], ";",
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"timeKatz", ",", " ", "predKatz"}], "}"}], "=", " ", 
+        RowBox[{"Timing", "[", 
+         RowBox[{"katz", "[", 
+          RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", 
+        RowBox[{"Length", "[", "predKatz", "]"}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"scoreKatz", " ", "=", " ", 
+        RowBox[{"N", "[", 
+         RowBox[{
+          RowBox[{"Length", "[", 
+           RowBox[{"Intersection", "[", 
+            RowBox[{"toPredict", ",", " ", "predKatz"}], "]"}], "]"}], "/", 
+          RowBox[{"Length", "[", "predKatz", "]"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", "\"\<Done With Katz\>\"", "]"}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"timeJacard", ",", " ", "predJacard"}], "}"}], "=", " ", 
+        RowBox[{"Timing", "[", 
+         RowBox[{"jacard", "[", 
+          RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", 
+        RowBox[{"Length", "[", "predJacard", "]"}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"scoreJacard", " ", "=", " ", 
+        RowBox[{"N", "[", 
+         RowBox[{
+          RowBox[{"Length", "[", 
+           RowBox[{"Intersection", "[", 
+            RowBox[{"toPredict", ",", " ", "predJacard"}], "]"}], "]"}], "/", 
+          
+          RowBox[{"Length", "[", "predJacard", "]"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", "\"\<Done With Jacard\>\"", "]"}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"timePageRank", ",", " ", "predPageRank"}], "}"}], " ", "=", 
+        " ", 
+        RowBox[{"Timing", "[", 
+         RowBox[{"pageRank", "[", 
+          RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", 
+        RowBox[{"Length", "[", "predPageRank", "]"}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"scorePageRank", " ", "=", " ", 
+        RowBox[{"N", "[", 
+         RowBox[{
+          RowBox[{"Length", "[", 
+           RowBox[{"Intersection", "[", 
+            RowBox[{"toPredict", ",", " ", "predPageRank"}], "]"}], "]"}], 
+          "/", 
+          RowBox[{"Length", "[", "predPageRank", "]"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", "\"\<Done With Page Rank\>\"", "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"TOO", " ", "SLOW", "\[IndentingNewLine]", 
+           RowBox[{"{", 
+            RowBox[{"timeMoorePenrose", ",", " ", "predMoorePenrose"}], 
+            "}"}]}], " ", "=", " ", 
+          RowBox[{"Timing", "[", 
+           RowBox[{"moorePenrose", "[", 
+            RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"scoreMoorePenrose", " ", "=", " ", 
+          RowBox[{"N", "[", 
+           RowBox[{
+            RowBox[{"Length", "[", 
+             RowBox[{"Intersection", "[", 
+              RowBox[{"toPredict", ",", " ", "predMoorePenrose"}], "]"}], 
+             "]"}], "/", 
+            RowBox[{"Length", "[", "predMoorePenrose", "]"}]}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"Print", "[", "\"\<Done With Moore Penrose\>\"", "]"}], 
+         ";"}], "\[IndentingNewLine]", "*)"}], "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"timeHittingTime", ",", " ", "predHittingTime"}], "}"}], " ",
+         "=", " ", 
+        RowBox[{"Timing", "[", 
+         RowBox[{"hittingTime", "[", 
+          RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", 
+        RowBox[{"Length", "[", "predHittingTime", "]"}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"scoreHitTime", " ", "=", " ", 
+        RowBox[{"N", "[", 
+         RowBox[{
+          RowBox[{"Length", "[", 
+           RowBox[{"Intersection", "[", 
+            RowBox[{"toPredict", ",", " ", "predHittingTime"}], "]"}], "]"}], 
+          "/", 
+          RowBox[{"Length", "[", "predHittingTime", "]"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", "\"\<Done With Hitting Time\>\"", "]"}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"timeCommuteTime", ",", " ", "predCommuteTime"}], "}"}], " ",
+         "=", " ", 
+        RowBox[{"Timing", "[", 
+         RowBox[{"commuteTime", "[", 
+          RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", 
+        RowBox[{"Length", "[", "predCommuteTime", "]"}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"scoreCommTime", " ", "=", " ", 
+        RowBox[{"N", "[", 
+         RowBox[{
+          RowBox[{"Length", "[", 
+           RowBox[{"Intersection", "[", 
+            RowBox[{"toPredict", ",", " ", "predCommuteTime"}], "]"}], "]"}], 
+          "/", 
+          RowBox[{"Length", "[", "predCommuteTime", "]"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", "\"\<Done With Commute Time\>\"", "]"}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"results", " ", "=", " ", 
+        RowBox[{"{", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+           "\"\<Predictor\>\"", ",", " ", "\"\<Accuracy\>\"", ",", 
+            "\"\<Time\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"{", 
+           RowBox[{
+           "\"\<Effective Transition\>\"", ",", " ", "scoreEffTransition", 
+            ",", " ", "timeEffectiveTransition"}], "}"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"{", 
+           RowBox[{
+           "\"\<Weighted Effective Transition\>\"", ",", " ", 
+            "scoreWEffTransition", ",", " ", "timeWEffectiveTransition"}], 
+           "}"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"{", 
+           RowBox[{
+           "\"\<Spectral Embedding\>\"", ",", " ", "scoreSpecEmbedding", ",", 
+            "timeSpectralEmbedding"}], "}"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"{", 
+           RowBox[{
+           "\"\<Shortest Path\>\"", ",", " ", "scoreShortPath", ",", 
+            "timeShortestPath"}], "}"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"{", 
+           RowBox[{
+           "\"\<Common Neighbors\>\"", ",", " ", "scoreCommNeighbors", ",", 
+            "timeCommonNeighbors"}], "}"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"{", 
+           RowBox[{
+           "\"\<Preferential Attatchment\>\"", ",", " ", 
+            "scorePrefAttatchment", ",", "timePrefAttatchment"}], "}"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"{", 
+           RowBox[{"\"\<Katz\>\"", ",", " ", "scoreKatz", ",", "timeKatz"}], 
+           "}"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"{", 
+           RowBox[{
+           "\"\<Jacard\>\"", ",", " ", "scoreJacard", ",", "timeJacard"}], 
+           "}"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"{", 
+           RowBox[{
+           "\"\<PageRank\>\"", ",", " ", "scorePageRank", ",", 
+            "timePageRank"}], "}"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{
+             "\"\<MoorePenrose\>\"", ",", "scoreMoorePenrose", ",", 
+              "timeMoorePenrose"}], "}"}], ","}], "*)"}], 
+          "\[IndentingNewLine]", 
+          RowBox[{"{", 
+           RowBox[{
+           "\"\<Hitting Time\>\"", ",", "scoreHitTime", ",", 
+            "timeHittingTime"}], "}"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"{", 
+           RowBox[{
+           "\"\<Commute Time\>\"", ",", " ", "scoreCommTime", ",", 
+            "timeCommuteTime"}], "}"}]}], "\[IndentingNewLine]", "}"}]}], ";",
+        "\[IndentingNewLine]", 
+       RowBox[{"table", " ", "=", " ", 
+        RowBox[{"Grid", "[", 
+         RowBox[{"results", ",", " ", 
+          RowBox[{"Alignment", "\[Rule]", "Left"}], ",", " ", 
+          RowBox[{"Spacings", "\[Rule]", 
+           RowBox[{"{", 
+            RowBox[{"1", ",", " ", "1"}], "}"}]}], ",", " ", 
+          RowBox[{"Frame", "\[Rule]", "All"}], ",", " ", 
+          RowBox[{"ItemStyle", "\[Rule]", "\"\<Text\>\""}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", "table", "]"}], ";", "\[IndentingNewLine]", 
+       "table"}]}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"compareScoresRandom", "[", 
+    RowBox[{"graph_", ",", "k_"}], "]"}], " ", ":=", "\[IndentingNewLine]", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "connected", ",", " ", "g", ",", " ", "timeEffectiveTransition", ",", 
+       " ", "predEffectiveTransition", ",", "lengthEffTransition", ",", 
+       "timeSpectralEmbedding", ",", " ", "predSpectralEmbedding", ",", 
+       "lengthSpecEmbedding", " ", ",", "timeShortestPath", ",", " ", 
+       "predShortestPath", ",", "lengthShortPath", ",", "timeCommonNeighbors",
+        ",", " ", "predCommonNeighbors", ",", "lengthCommNeighbors", ",", 
+       "timePrefAttatchment", ",", " ", "predPrefAttatchment", ",", 
+       "lengthPrefAttatchment", ",", "timeKatz", ",", " ", "predKatz", ",", 
+       "lengthKatz", ",", "timePageRank", ",", " ", "predPageRank", ",", 
+       "lengthPageRank", ",", " ", "timeHittingTime", ",", "predHittingTime", 
+       ",", "lengthHitTime", ",", "timeCommuteTime", ",", "predCommuteTime", 
+       ",", "lengthCommTime", ",", "results", ",", "table", ",", "timeJacard",
+        ",", " ", "predJacard", ",", "lengthJacard", ",", "predMoorePenrose", 
+       ",", " ", "lengthMoorePenrose", ",", "timeMoorePenrose"}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"connected", " ", "=", " ", 
+       RowBox[{
+        RowBox[{"ConnectedComponents", "[", "graph", "]"}], "[", 
+        RowBox[{"[", "1", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"g", " ", "=", " ", 
+       RowBox[{"Subgraph", "[", 
+        RowBox[{"graph", ",", " ", "connected", ",", " ", 
+         RowBox[{"VertexLabels", "\[Rule]", "Automatic"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "g", "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+        "timeEffectiveTransition", ",", " ", "predEffectiveTransition"}], 
+        "}"}], " ", "=", " ", 
+       RowBox[{"Timing", "[", 
+        RowBox[{"modifiedEffectiveTransition", "[", 
+         RowBox[{"g", ",", " ", "k"}], "]"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"lengthEffTransition", " ", "=", " ", 
+       RowBox[{"Length", "[", "predEffectiveTransition", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "\"\<Done With Effective Transition\>\"", "]"}], 
+      ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"timeSpectralEmbedding", ",", " ", "predSpectralEmbedding"}], 
+        "}"}], " ", "=", " ", 
+       RowBox[{"Timing", "[", 
+        RowBox[{"spectralEmbedPredictor", "[", 
+         RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      
+      RowBox[{"lengthSpecEmbedding", " ", "=", 
+       RowBox[{"Length", "[", "predSpectralEmbedding", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "\"\<Done With Spectral Embedding\>\"", "]"}], 
+      ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"timeShortestPath", ",", " ", "predShortestPath"}], "}"}], 
+       " ", "=", "  ", 
+       RowBox[{"Timing", "[", 
+        RowBox[{"shortestPathLength", "[", 
+         RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      
+      RowBox[{"lengthShortPath", " ", "=", 
+       RowBox[{"Length", "[", "predShortestPath", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "\"\<Done With Shortest Path\>\"", "]"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"timeCommonNeighbors", ",", " ", "predCommonNeighbors"}], 
+        "}"}], " ", "=", " ", 
+       RowBox[{"Timing", "[", 
+        RowBox[{"commonNeighbors", "[", 
+         RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      
+      RowBox[{"lengthCommNeighbors", " ", "=", 
+       RowBox[{"Length", "[", "predCommonNeighbors", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "\"\<Done With Common Neighbors\>\"", "]"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"timePrefAttatchment", ",", " ", "predPrefAttatchment"}], 
+        "}"}], " ", "=", " ", 
+       RowBox[{"Timing", "[", 
+        RowBox[{"preferentialAttatchment", "[", 
+         RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      
+      RowBox[{"lengthPrefAttatchment", " ", "=", 
+       RowBox[{"Length", "[", "predPrefAttatchment", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+      "Print", "[", "\"\<Done With Preferential Attatchment\>\"", "]"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"timeKatz", ",", " ", "predKatz"}], "}"}], "=", " ", 
+       RowBox[{"Timing", "[", 
+        RowBox[{"katz", "[", 
+         RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      
+      RowBox[{"lengthKatz", " ", "=", 
+       RowBox[{"Length", "[", "predKatz", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "\"\<Done With Katz\>\"", "]"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"timeJacard", ",", " ", "predJacard"}], "}"}], "=", " ", 
+       RowBox[{"Timing", "[", 
+        RowBox[{"jacard", "[", 
+         RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      
+      RowBox[{"lengthJacard", " ", "=", " ", 
+       RowBox[{"Length", "[", "predJacard", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "\"\<Done With Jacard\>\"", "]"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"timePageRank", ",", " ", "predPageRank"}], "}"}], " ", "=", 
+       " ", 
+       RowBox[{"Timing", "[", 
+        RowBox[{"pageRank", "[", 
+         RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      
+      RowBox[{"lengthPageRank", " ", "=", 
+       RowBox[{"Length", "[", "predPageRank", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "\"\<Done With Page Rank\>\"", "]"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"timeMoorePenrose", ",", " ", "predMoorePenrose"}], "}"}], 
+       " ", "=", " ", 
+       RowBox[{"Timing", "[", 
+        RowBox[{"moorePenrose", "[", 
+         RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      
+      RowBox[{"lengthMoorePenrose", " ", "=", " ", 
+       RowBox[{"Length", "[", "predMoorePenrose", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "\"\<Done With Moore Penrose\>\"", "]"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"timeHittingTime", ",", " ", "predHittingTime"}], "}"}], " ", 
+       "=", " ", 
+       RowBox[{"Timing", "[", 
+        RowBox[{"hittingTime", "[", 
+         RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      
+      RowBox[{"lengthHitTime", " ", "=", 
+       RowBox[{"Length", "[", "predHittingTime", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "\"\<Done With Hitting Time\>\"", "]"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"timeCommuteTime", ",", " ", "predCommuteTime"}], "}"}], " ", 
+       "=", " ", 
+       RowBox[{"Timing", "[", 
+        RowBox[{"commuteTime", "[", 
+         RowBox[{"g", ",", "k"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      
+      RowBox[{"lengthCommTime", " ", "=", " ", 
+       RowBox[{"Length", "[", "predCommuteTime", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "\"\<Done With Commute Time\>\"", "]"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"results", " ", "=", " ", 
+       RowBox[{"{", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<Predictor\>\"", ",", " ", "\"\<Prediction\>\"", ",", 
+           "\"\<Length\>\"", ",", "\"\<Time\>\""}], "}"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<Effective Transition\>\"", ",", "  ", 
+           "predEffectiveTransition", ",", "lengthEffTransition", ",", " ", 
+           "timeEffectiveTransition"}], "}"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<SpectralEmbedding\>\"", ",", " ", "predSpectralEmbedding", ",",
+            "lengthSpecEmbedding", ",", "timeSpectralEmbedding"}], "}"}], ",",
+          "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<ShortestPath\>\"", ",", "predShortestPath", ",", " ", 
+           "lengthShortPath", ",", "timeShortestPath"}], "}"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<CommonNeighbors\>\"", ",", "predCommonNeighbors", ",", " ", 
+           "lengthCommNeighbors", ",", "timeCommonNeighbors"}], "}"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<PreferentialAttatchment\>\"", ",", "predPrefAttatchment", ",", 
+           " ", "lengthPrefAttatchment", ",", "timePrefAttatchment"}], "}"}], 
+         ",", "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<Katz\>\"", ",", "predKatz", ",", " ", "lengthKatz", ",", 
+           "timeKatz"}], "}"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<Jacard\>\"", ",", "predJacard", ",", " ", "lengthJacard", ",", 
+           "timeJacard"}], "}"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<PageRank\>\"", ",", "predPageRank", ",", " ", "lengthPageRank",
+            ",", "timePageRank"}], "}"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<MoorePenrose\>\"", ",", "predMoorePenrose", ",", " ", 
+           "lengthMoorePenrose", ",", "timeMoorePenrose"}], "}"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<HittingTime\>\"", ",", "predHittingTime", ",", "lengthHitTime",
+            ",", "timeHittingTime"}], "}"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<CommuteTime\>\"", ",", "predCommuteTime", ",", " ", 
+           "lengthCommTime", ",", "timeCommuteTime"}], "}"}]}], 
+        "\[IndentingNewLine]", "}"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"table", " ", "=", " ", 
+       RowBox[{"Grid", "[", 
+        RowBox[{"results", ",", " ", 
+         RowBox[{"Alignment", "\[Rule]", "Left"}], ",", " ", 
+         RowBox[{"Spacings", "\[Rule]", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", " ", "1"}], "}"}]}], ",", " ", 
+         RowBox[{"Frame", "\[Rule]", "All"}], ",", " ", 
+         RowBox[{"ItemStyle", "\[Rule]", "\"\<Text\>\""}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "table", "]"}], ";", "\[IndentingNewLine]", 
+      "table"}]}], "]"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.7288221873953333`*^9, 3.728822188069145*^9}}]
+},
+WindowSize->{808, 911},
+WindowMargins->{{52, Automatic}, {Automatic, 124}},
+FrontEndVersion->"11.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (July 28, \
+2016)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 32930, 739, 4464, "Input"]
+}
+]
+*)
+
+(* End of internal cache information *)
+
