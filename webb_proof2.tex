@@ -1,0 +1,38 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}          
+\usepackage{graphicx}
+\usepackage{amsthm, amsmath, amssymb}
+\usepackage{setspace}\onehalfspacing
+\usepackage[loose,nice]{units} %replace "nice" by "ugly" for units in upright fractions
+ 
+\title{Approximation Convergence Proof}
+\author{Bryn Balls-Barker}
+\date{2018}
+ 
+\begin{document}
+\maketitle
+
+\textbf{Lemma 1:} The eigenvalues of a matrix are continuous in the entries of the matrix. 
+
+Proved in http://people.sc.fsu.edu/~jpeterson/Eigen
+\vskip .5cm
+
+\textbf{Definition:} Let Let $G$ be a graph on $n$ vertices with adjacency matrix $M = [m_{ij}]$. We will call $\Sigma(M)$ the isoradial reduction of $M$, computed as $$\Sigma(M)_{s=(i,j)}=M_{ss}-M_{s\bar{s}}\left(M_{\bar{s}\bar{s}}-\lambda I\right)^{-1}M_{\bar{s}s} \textrm{ for all } i, j \in \{1, 2, 3, ..., n\}.$$
+\vskip .5cm
+
+\textbf{Lemma 2:} Let $A = [a_{ij}]$ be irreducible and nonnegative. Then $\frac{\delta \rho (A)}{\delta a_{ij}} > 0$ for all i and j.
+\vskip .5cm
+
+\textbf{Lemma 3:} Let $A$ be an adjacency matrix of a graph $G$ and let $\{A_1, A_2, ..., A_k\}$ be the adjacency matrices of the strongly connected components of $G$. Then $\sigma (A) = \bigcup_{i=1}^k \sigma(A_i)$.
+\vskip .5cm
+
+\textbf{Theorem:} Let $G$ be a graph on $n$ vertices with adjacency matrix $M = [m_{ij}]$ and let $\Sigma(M)$ be the isoradial reduction of $M$. If $M$ is nonnegative and irreducible, then $\Sigma(M)$ exists. 
+\vskip .5cm
+Proof: Let $G$ be a graph on $n$ vertices with irreducible and nonnegative adjacency matrix $M = [m_{ij}]$. For each pair of nodes $i, j \in \{1, 2, 3, ..., n\}$, $M_{\bar{s}\bar{s}}$ is an $n-2 \times n-2$ matrix created by removing the $i$th and $j$th rows and columns from $M$. Let $\epsilon >0$. We will remove these rows and columns by setting the nonzero entries equal to $\epsilon$ and then taking the limit as $\epsilon \to 0$. Since $\epsilon >0$, the matrix will continue to be nonnegative and irreducible as the limit is taken. Thus by Lemma 2, the spectral radius will strictly degrease as $\epsilon \to 0$ since $\frac{\delta \rho (M)}{\delta M_{ij}} > 0$ for all i and j. 
+
+Let $\hat{M}_{\bar{s}\bar{s}}^\epsilon$ be an $n \times n$ matrix created by setting the $i$th and $j$th rows and columns to $\epsilon$. Then it follows from Lemma 1 that $$\lim_{\epsilon \to 0} \hat{M}_{\bar{s}\bar{s}}^\epsilon = \hat{M}_{\bar{s}\bar{s}}^\epsilon |_{\epsilon=0}=\hat{M}_{\bar{s}\bar{s}}^0.$$ Combining this with the result of Lemma 2, we have $\rho (\hat{M}_{\bar{s}\bar{s}}^0) < \rho (M)$. Now consider the graph corresponding to $\hat{M}_{\bar{s}\bar{s}}^0$, with the exception of the isolated nodes $i$ and $j$, this graph has the same strongly connected components as the graph corresponding to $\hat{M}_{\bar{s}\bar{s}}$. Thus by Lemma 3 we have that $\rho(\hat{M}_{\bar{s}\bar{s}}) = \rho (\hat{M}_{\bar{s}\bar{s}}^0) < \rho (M)$.
+
+Now assume by way of contradiction that $\Sigma (M)$ does not exist. By definition, this implies that there exists $s = (i,j) \in {1, 2, ... n}$ such that $M_{\bar{s}\bar{s}}-\lambda I$ is not invertible and thus $det(M_{\bar{s}\bar{s}}-\lambda I) = 0$ which by definition implies that $\lambda$ is an eigenvalue for $M_{\bar{s}\bar{s}}$. Thus $$\lambda \leq \rho (M_{\bar{s}\bar{s}}) < \rho (M) = \lambda \implies \lambda < \lambda$$ which is a contradiction. Thus $\Sigma (M)$ exists. $\qed$
+
+ 
+\end{document}
